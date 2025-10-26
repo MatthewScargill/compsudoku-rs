@@ -1,3 +1,5 @@
+use core::panic;
+
 #[derive(Clone, Copy)]
 pub struct Cell {
     pub value: u8, // value of the cell
@@ -41,6 +43,20 @@ impl Cell {
     // check if cell is solvable (number of candidates = 1)
     pub fn is_solvable(&self) -> bool {
         self.count_candidates() == 1
+    }
+
+    // find the value of the solvable cell
+    pub fn find_candidate(&self) -> usize {
+
+        let mut index = 0;
+
+        for (i, &candidate) in self.candidates.iter().enumerate() {
+            if candidate {
+                index = i
+            }
+            panic!("not using this in the right place")
+        }
+        index + 1
     }
 }
 
