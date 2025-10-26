@@ -1,0 +1,3 @@
+A friend and I raced to complete the same sudoku puzzle, with drinking forfeits for each row, column, and 3x3 sub-grid. While the drinking may be a hard sell for television, they'll be begging me for a framework for evaluating which of the next deducible cells will unlock the most insight into the sudoku along with a deduction difficulty rating, allowing for real time commentary on how much 2 or more competitors are deviating from the optimal line and how impressive it is when they find a very hard cell. 
+
+Written in Rust because I'm cute like that.
