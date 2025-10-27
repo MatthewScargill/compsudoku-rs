@@ -101,6 +101,11 @@ impl Board {
         }
     }
 
+    // update the candidates of every cell
+    pub fn evaluate(board: &Board) {
+        
+    }
+
     // terminal output of the current board
     pub fn print(&self) {
         for i in 0..9 {

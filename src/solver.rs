@@ -7,8 +7,23 @@ pub enum Move {
     NakedSingle { row: usize, col: usize, value: u8 },
 }
 
-// board evaluator
+// find moves
+pub fn find_moves(board: &Board) -> Vec<Move> {
 
+    // initialise vecotr of moves
+    let mut moves = Vec::new();
+
+    // make vectors of all the moves
+    let mut nakedmoves = find_naked_singles(board);
+
+
+    // add every element 
+    moves = std::mem::take(&mut nakedmoves);
+
+
+    // return vector of moves
+    moves
+}
 
 
 // may have written this before even making a board evaluator woops
