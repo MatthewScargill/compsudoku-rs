@@ -45,7 +45,7 @@ impl Cell {
         self.count_candidates() == 1
     }
 
-    // find the value of the solvable cell
+    // find the value of the solvable cell 
     pub fn find_candidate(&self) -> usize {
 
         let mut index = 0;
@@ -54,7 +54,6 @@ impl Cell {
             if candidate {
                 index = i
             }
-            panic!("not using this in the right place")
         }
         index + 1
     }
@@ -102,8 +101,59 @@ impl Board {
     }
 
     // update the candidates of every cell
-    pub fn evaluate(board: &Board) {
-        
+    pub fn evaluate(&mut self) {
+        for row in 0..9 {
+            for col in 0..9 {
+
+                // temp variable because the borrow checker is a fickle mistress
+                let mut used = [false; 9]; // reverse candidates array
+
+                // if used up or down the colum -> add true in to used vector 
+                for i in 0..9 {
+                    let num = self.grid[row][i].value;
+                    if num != 0 {
+                        used[(num - 1) as usize] = true;
+                        continue // break to save time
+                    }
+                }
+
+                for j in 0..9 {
+                    let num = self.grid[j][col].value;
+                    if num != 0 {
+                        used[(num - 1) as usize] = true;
+                        continue // break to save time
+                    }
+                }
+
+                let box_row = (row / 3) * 3; // floor div by 3 (0,1,2) * 3 to get beginning of each box row
+                let box_col = (col / 3) * 3; // same for column
+                for i in box_row..box_row + 3 {
+                    for j in box_col..box_col + 3 {
+                        let val = self.grid[i][j].value;
+                        if val != 0 {
+                            used[(val - 1) as usize] = true;
+                            continue; 
+                        }
+                    }
+                }
+
+                // now we can call the cell and replace with anti temp values
+                let cell = &mut self.grid[row][col];
+
+                if cell.value != 0 {
+                    cell.candidates = [false; 9]; // no candidates if it already has a value (sad this is at the end)
+                } else {
+                    cell.candidates = [true; 9];
+                    for i in 0..9 {
+                        if used[i] {
+                            cell.candidates[i] = false;
+                        }
+                    }
+                }
+                // this was a bit convoluted let's see if it runs 
+                // wow it doesn't - To fix
+            }
+        }
     }
 
     // terminal output of the current board

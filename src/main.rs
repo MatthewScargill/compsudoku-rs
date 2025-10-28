@@ -13,9 +13,16 @@ fn main() {
     let mut board = Board::new();
     //board.print();
     board.setup(TEST2);
+    board.evaluate();
     board.print();
     let moves = solver::find_naked_singles(&board);
+    
     for mv in &moves {
         println!("{:?}", mv);
     }
-}   
+
+    solver::apply_moves(&mut board, &moves);
+
+    board.print()
+
+}

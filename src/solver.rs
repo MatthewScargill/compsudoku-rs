@@ -7,6 +7,26 @@ pub enum Move {
     NakedSingle { row: usize, col: usize, value: u8 },
 }
 
+impl Move {
+    pub fn row(&self) -> usize {
+        match *self {
+            Move::NakedSingle { row, .. } => row,
+        }
+    }
+
+    pub fn col(&self) -> usize {
+        match *self {
+            Move::NakedSingle { col, .. } => col,
+        }
+    }
+
+    pub fn value(&self) -> u8 {
+        match *self {
+            Move::NakedSingle { value, .. } => value,
+        }
+    }
+}
+
 // find moves
 pub fn find_moves(board: &Board) -> Vec<Move> {
 
@@ -25,6 +45,11 @@ pub fn find_moves(board: &Board) -> Vec<Move> {
     moves
 }
 
+pub fn apply_moves(board: &mut Board, moves: &Vec<Move>) {
+    for mv in moves {
+        board.grid[mv.row()][mv.col()].value = mv.value();
+    }
+}
 
 // may have written this before even making a board evaluator woops
 // find naked singles (in your area!) ie. cells with only 1 candidate
