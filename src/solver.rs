@@ -44,12 +44,14 @@ pub fn find_moves(board: &Board) -> Vec<Move> {
     moves.extend(hiddensingles);
 
     // filter for unique moves
-    let unique_moves: Vec<Move> = HashSet::<_>::from_iter(moves).into_iter().collect();
+    // let unique_moves: Vec<Move> = HashSet::<_>::from_iter(moves).into_iter().collect();
     // this was and forever will be a stack overflow job
 
 
     // return vector of unique moves
-    unique_moves
+    //unique_moves
+
+    moves
 }
 
 pub fn apply_moves(board: &mut Board, moves: &Vec<Move>) {
