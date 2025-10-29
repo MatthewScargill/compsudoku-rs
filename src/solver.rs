@@ -4,25 +4,26 @@ use crate::board::*;
 
 #[derive(Debug)]
 pub enum Move {
-    NakedSingle { row: usize, col: usize, value: u8 },
+    NakedSingle { row: usize, col: usize, value: u8 }, // only have one candidate possible 
+    HiddenSingle { row: usize, col: usize, value: u8 } // have unique candidate in row/column/subgrid 
 }
 
 impl Move {
     pub fn row(&self) -> usize {
         match *self {
-            Move::NakedSingle { row, .. } => row,
+            Move::NakedSingle { row, .. } | Move::HiddenSingle { row, .. }=> row,
         }
     }
 
     pub fn col(&self) -> usize {
         match *self {
-            Move::NakedSingle { col, .. } => col,
+            Move::NakedSingle { col, .. } | Move::HiddenSingle { col, .. } => col,
         }
     }
 
     pub fn value(&self) -> u8 {
         match *self {
-            Move::NakedSingle { value, .. } => value,
+            Move::NakedSingle { value, .. } | Move::HiddenSingle { value, .. } => value,
         }
     }
 }
@@ -34,12 +35,12 @@ pub fn find_moves(board: &Board) -> Vec<Move> {
     let mut moves = Vec::new();
 
     // make vectors of all the moves
-    let mut nakedmoves = find_naked_singles(board);
+    let mut nakedsingles = find_naked_singles(board);
+    let mut hiddensingles = find_hidden_singles(board);
 
-
-    // add every element 
-    moves = std::mem::take(&mut nakedmoves);
-
+    // add all move types to move vector
+    moves = std::mem::take(&mut nakedsingles);
+    //moves = std::mem::take(&mut hiddensingles);
 
     // return vector of moves
     moves
@@ -70,4 +71,9 @@ pub fn find_naked_singles(board: &Board) -> Vec<Move> {
     }
 
     moves
+}
+
+// finding cells which have a unique candidate in their row/column/subgrid
+pub fn find_hidden_singles(board: &Board) {
+
 }

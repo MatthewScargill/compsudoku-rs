@@ -1,5 +1,3 @@
-use core::panic;
-
 #[derive(Clone, Copy)]
 pub struct Cell {
     pub value: u8, // value of the cell
@@ -13,11 +11,6 @@ impl Cell {
     pub fn new() -> Self {
         Self {value: 0, candidates: [true; 9],
         }
-    }
-
-    // set .value of the cell
-    pub fn set(&mut self, value: u8) {
-        self.value = value
     }
 
     // check if there's a candidate
@@ -135,13 +128,12 @@ impl Board {
                 if cell.value != 0 {
                     cell.candidates = [false; 9]; // no candidates if it already has a value (sad this is at the end)
                 } else {
-                    cell.candidates = [true; 9];
+                    cell.candidates = [true; 9]; // reset between moves
                     for i in 0..9 {
                         cell.candidates[i] = !used[i];
                     }
                 }
-                // this was a bit convoluted let's see if it runs 
-                // wow it doesn't - To fix
+                // this was a bit convoluted but it works yay
             }
         }
     }
