@@ -70,12 +70,7 @@ impl Board {
         Self { grid: [[Cell::new(); 9]; 9] }
     }
 
-    // find cell value
-    pub fn get(&self, row: usize, col: usize) -> u8 {
-        self.grid[row][col].value
-    }
-
-    // set cell value
+    // set cell value. this is also on the chopping block
     pub fn set(&mut self, row: usize, col: usize, value: u8) {
         self.grid[row][col].value = value;
     }
@@ -113,7 +108,6 @@ impl Board {
                     let num = self.grid[row][i].value;
                     if num != 0 {
                         used[(num - 1) as usize] = true;
-                        continue // break to save time
                     }
                 }
 
@@ -121,7 +115,6 @@ impl Board {
                     let num = self.grid[j][col].value;
                     if num != 0 {
                         used[(num - 1) as usize] = true;
-                        continue // break to save time
                     }
                 }
 
@@ -132,7 +125,6 @@ impl Board {
                         let val = self.grid[i][j].value;
                         if val != 0 {
                             used[(val - 1) as usize] = true;
-                            continue; 
                         }
                     }
                 }
@@ -145,9 +137,7 @@ impl Board {
                 } else {
                     cell.candidates = [true; 9];
                     for i in 0..9 {
-                        if used[i] {
-                            cell.candidates[i] = false;
-                        }
+                        cell.candidates[i] = !used[i];
                     }
                 }
                 // this was a bit convoluted let's see if it runs 

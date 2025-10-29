@@ -12,7 +12,7 @@ const TEST2: &str = "53007000060019500009800006080006000340080300170002000606000
 fn main() {
     let mut board = Board::new();
     //board.print();
-    board.setup(TEST2);
+    board.setup(TEST);
     board.evaluate();
     board.print();
     let moves = solver::find_naked_singles(&board);
@@ -26,3 +26,5 @@ fn main() {
     board.print()
 
 }
+
+
