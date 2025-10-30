@@ -47,20 +47,19 @@ pub fn find_moves(board: &Board) -> Vec<Move> {
     // let unique_moves: Vec<Move> = HashSet::<_>::from_iter(moves).into_iter().collect();
     // this was and forever will be a stack overflow job
 
-
     // return vector of unique moves
     //unique_moves
 
     moves
 }
 
+// this is probably where we fix the overwriting problem
 pub fn apply_moves(board: &mut Board, moves: &Vec<Move>) {
     for mv in moves {
         board.grid[mv.row()][mv.col()].value = mv.value();
     }
 }
 
-// may have written this before even making a board evaluator woops
 // find naked singles (in your area!) ie. cells with only 1 candidate
 pub fn find_naked_singles(board: &Board) -> Vec<Move> {
 
@@ -77,13 +76,11 @@ pub fn find_naked_singles(board: &Board) -> Vec<Move> {
             }
         }
     }
-
-    moves
+    moves // no duplicates and currently works perfectly
 }
 
 // finding cells which have a unique candidate in their row/column/subgrid
-// i personally hate this function it made me have to figure out how to remove duplicates and it can't be very 
-// fast but oh well, to be fixed soon (if it isn't already broken)
+// i personally hate this function, it looks very ugly but it was late
 pub fn find_hidden_singles(board: &Board) -> Vec<Move> {
 
     let mut moves = Vec::new();
@@ -163,5 +160,5 @@ pub fn find_hidden_singles(board: &Board) -> Vec<Move> {
             }
         }
     }
-    moves // this produces duplicates in the moves but oh well still works for the solver for now
+    moves // produces duplicates and overwriting solved cells, broken
 }

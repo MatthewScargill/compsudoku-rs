@@ -12,25 +12,10 @@ const TEST2: &str = "53007000060019500009800006080006000340080300170002000606000
 const TEST3: &str = "040000005568010400107054600000008000730162098685470030400800250000706300026305001";
 
 fn main() {
+    //initialise and setup board
     let mut board = Board::new();
-    //board.print();
-    board.setup(TEST3);
-    board.evaluate();
-    board.print();
-
-    let mut i = 0;
-
-    while i < 4 {
-        let moves = solver::find_moves(&board);
+    board.setup(TEST2);
     
-        for mv in &moves {
-            println!("{:?}", mv);
-        }
-
-        solver::apply_moves(&mut board, &moves);
-
-        board.print();
-        i += 1
-    }
-
+    // look at solution
+    board.solve(); // this doesn't work yet
 }

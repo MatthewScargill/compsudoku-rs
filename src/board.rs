@@ -1,3 +1,5 @@
+use crate::solver;
+
 #[derive(Clone, Copy)]
 pub struct Cell {
     pub value: u8, // value of the cell
@@ -137,6 +139,29 @@ impl Board {
             }
         }
     }
+
+    // solve the board automatically
+    pub fn solve(&mut self) {
+        
+        self.evaluate();
+
+        loop {
+
+            let moves = solver::find_moves(&*self);
+
+            if moves.is_empty() {
+                break;
+            }
+
+            solver::apply_moves(self, &moves);
+
+            for mv in moves {
+                println!("{:?}", mv);
+            }
+            self.print();
+        }    
+    }
+
 
     // terminal output of the current board
     pub fn print(&self) {
