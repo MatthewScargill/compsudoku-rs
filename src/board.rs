@@ -142,22 +142,32 @@ impl Board {
 
     // solve the board automatically
     pub fn solve(&mut self) {
-        
-        self.evaluate();
+
+        // initial state of the board
+        self.print();
 
         loop {
 
+            // update candidates list
+            self.evaluate();
+
+            // find possible moves
             let moves = solver::find_moves(&*self);
 
+            // break once the board is complete (no more moves)
             if moves.is_empty() {
                 break;
             }
 
+            // if they exist, apply moves
             solver::apply_moves(self, &moves);
 
+            // print moves for debugging
             for mv in moves {
                 println!("{:?}", mv);
             }
+            
+            // board with above moves applied (again for debugging)
             self.print();
         }    
     }

@@ -32,7 +32,7 @@ impl Move {
 // find moves
 pub fn find_moves(board: &Board) -> Vec<Move> {
 
-    // initialise vecotr of moves
+    // initialise vector of moves
     let mut moves = Vec::new();
 
     // make vectors of all the moves
@@ -53,7 +53,7 @@ pub fn find_moves(board: &Board) -> Vec<Move> {
     moves
 }
 
-// this is probably where we fix the overwriting problem
+// applying moves from a vector
 pub fn apply_moves(board: &mut Board, moves: &Vec<Move>) {
     for mv in moves {
         board.grid[mv.row()][mv.col()].value = mv.value();
@@ -80,85 +80,66 @@ pub fn find_naked_singles(board: &Board) -> Vec<Move> {
 }
 
 // finding cells which have a unique candidate in their row/column/subgrid
-// i personally hate this function, it looks very ugly but it was late
-pub fn find_hidden_singles(board: &Board) -> Vec<Move> {
+fn find_hidden_singles(board: &Board) -> Vec<Move> {
 
     let mut moves = Vec::new();
 
     for row in 0..9 {
-        for digit in 1..10 {
-            let mut count = 0;
-            let mut col_pos = 0;
+        for col in 0..9 {
 
-            for col in 0..9 {
-                let cell = &board.grid[row][col];
-                if cell.value == 0 && cell.candidates[(digit - 1) as usize] {
-                    count += 1;
-                    col_pos = col;
-                }
-            }
+            // skip solved cells
+            if board.grid[row][col].value != 0 { continue; }
 
-            if count == 1 {
-                moves.push(Move::HiddenSingle {
-                    row,
-                    col: col_pos,
-                    value: digit,
-                });
-            }
-        }
-    }
-    
-    for col in 0..9 {
-        for digit in 1..10 {
-            let mut count = 0;
-            let mut row_pos = 0;
+            // For each candidate digit d in this cell, if it's unique it goes in possible
+            let mut possible = Vec::new();
 
-            for row in 0..9 {
-                let cell = &board.grid[row][col];
-                if cell.value == 0 && cell.candidates[(digit - 1) as usize] {
-                    count += 1;
-                    row_pos = row;
-                }
-            }
+            // looping over every possible candidate to check if they're unique
+            for d in 1..=9 {
 
-            if count == 1 {
-                moves.push(Move::HiddenSingle {
-                    row: row_pos,
-                    col,
-                    value: digit,
-                });
-            }
-        }
-    }
+                // skip if d not a candidate
+                if !board.grid[row][col].candidates[(d-1) as usize] { continue; }
 
-    for box_row in 0..3 {
-        for box_col in 0..3 {
-            for digit in 1..10 {
-                let mut count = 0;
-                let mut target = (0, 0);
+                // counter variable 
+                let mut cnt = 0;
 
-                for r in 0..3 {
-                    for c in 0..3 {
-                        let row = box_row * 3 + r;
-                        let col = box_col * 3 + c;
-                        let cell = &board.grid[row][col];
+                // testing uniqueness in all categories, if any category filled -> candidate saved and move on
 
-                        if cell.value == 0 && cell.candidates[(digit - 1) as usize] {
-                            count += 1;
-                            target = (row, col);
-                        }
+                // unique in row?
+                for i in 0..9 {
+                    if board.grid[row][i].candidates[(d-1) as usize] { 
+                        cnt += 1; 
                     }
                 }
+                if cnt == 1 { possible.push(d); continue; } // add to possible and skip
 
-                if count == 1 {
-                    moves.push(Move::HiddenSingle {
-                        row: target.0,
-                        col: target.1,
-                        value: digit,
-                    });
+                // unique in col?
+                cnt = 0; // reset between tests
+                for j in 0..9 {
+                    if board.grid[j][col].candidates[(d-1) as usize] { 
+                        cnt += 1;
+                    }
                 }
+                if cnt == 1 { possible.push(d); continue; } // add to possible and skip
+
+                // unique in box?
+                let br = (row/3)*3; 
+                let bc = (col/3)*3;
+                cnt = 0;
+                for rr in br..br+3 {
+                    for cc in bc..bc+3 {
+                        if board.grid[rr][cc].candidates[(d-1) as usize] { cnt += 1; }
+                    }
+                }
+                if cnt == 1 { possible.push(d); }
+            }
+
+            // we have a list of candidates that fill one of the uniqueness conditions, but we only KNOW
+            // it to be the solution if every other candidate fails all the uniqueness tests 
+            if possible.len() == 1 {
+                moves.push(Move::HiddenSingle { row: row, col: col, value: possible[0] });
             }
         }
     }
-    moves // produces duplicates and overwriting solved cells, broken
+
+    moves
 }
