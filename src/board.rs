@@ -1,4 +1,5 @@
 use crate::solvers;
+use crate::evaluators;
 
 #[derive(Clone, Copy)]
 pub struct Cell {
@@ -65,11 +66,6 @@ impl Board {
         Self { grid: [[Cell::new(); 9]; 9] }
     }
 
-    // set cell value. this is also on the chopping block
-    pub fn set(&mut self, row: usize, col: usize, value: u8) {
-        self.grid[row][col].value = value;
-    }
-
     // setup a board from a string of 81 integers
     pub fn setup(&mut self, setup: &str) {
         // length check
@@ -90,55 +86,6 @@ impl Board {
         }
     }
 
-    // update the candidates of every cell
-    pub fn evaluate(&mut self) {
-        for row in 0..9 {
-            for col in 0..9 {
-
-                // temp variable because the borrow checker is a fickle mistress
-                let mut used = [false; 9]; // reverse candidates array
-
-                // if used up or down the colum -> add true in to used vector 
-                for i in 0..9 {
-                    let num = self.grid[row][i].value;
-                    if num != 0 {
-                        used[(num - 1) as usize] = true;
-                    }
-                }
-
-                for j in 0..9 {
-                    let num = self.grid[j][col].value;
-                    if num != 0 {
-                        used[(num - 1) as usize] = true;
-                    }
-                }
-
-                let box_row = (row / 3) * 3; // floor div by 3 (0,1,2) * 3 to get beginning of each box row
-                let box_col = (col / 3) * 3; // same for column
-                for i in box_row..box_row + 3 {
-                    for j in box_col..box_col + 3 {
-                        let val = self.grid[i][j].value;
-                        if val != 0 {
-                            used[(val - 1) as usize] = true;
-                        }
-                    }
-                }
-
-                // now we can call the cell and replace with anti temp values
-                let cell = &mut self.grid[row][col];
-
-                if cell.value != 0 {
-                    cell.candidates = [false; 9]; // no candidates if it already has a value (sad this is at the end)
-                } else {
-                    cell.candidates = [true; 9]; // reset between moves
-                    for i in 0..9 {
-                        cell.candidates[i] = !used[i];
-                    }
-                }
-                // this was a bit convoluted but it works yay
-            }
-        }
-    }
 
     // solve the board automatically
     pub fn solve(&mut self) {
@@ -148,8 +95,8 @@ impl Board {
 
         loop {
 
-            // update candidates list
-            self.evaluate();
+            // update candidates list with simple moves
+            evaluators::basic(self);
 
             // find possible moves
             let moves = solvers::find_moves(&*self);
@@ -158,6 +105,10 @@ impl Board {
             if moves.is_empty() {
                 break;
             }
+
+
+
+            // update evaluators and resulting moves above here
 
             // if they exist, apply moves
             solvers::apply_moves(self, &moves);

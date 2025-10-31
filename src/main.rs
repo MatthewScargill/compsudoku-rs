@@ -1,6 +1,9 @@
+mod board; // mod imports functions
+use board::*; // use imports structures
 mod solvers;
-mod board; 
-use board::*;
+mod evaluators;
+
+
 
 // easy test puzzles (solvable by singles only)
 const TEST1: &str = "530070000600195000098000060800060003400803001700020006060000280000419005000080079";
@@ -21,7 +24,7 @@ const TEST5: &str = "01060003430080060000407000000100002800090500073000050000008
 fn main() {
     //initialise and setup board
     let mut board = Board::new();
-    board.setup(TEST5);
+    board.setup(TEST2);
     
     // look at solution
     board.solve();

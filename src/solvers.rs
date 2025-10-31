@@ -1,8 +1,6 @@
 use crate::board::*;
-use std::collections::HashSet;
 
 // move type
-
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum Move {
     NakedSingle { row: usize, col: usize, value: u8 }, // only have one candidate possible 
@@ -36,8 +34,8 @@ pub fn find_moves(board: &Board) -> Vec<Move> {
     let mut moves = Vec::new();
 
     // make vectors of all the moves
-    let mut nakedsingles = find_naked_singles(board);
-    let mut hiddensingles = find_hidden_singles(board);
+    let nakedsingles = find_naked_singles(board);
+    let hiddensingles = find_hidden_singles(board);
 
     // add all move types to move vector
     moves.extend(nakedsingles);
@@ -69,7 +67,7 @@ pub fn find_naked_singles(board: &Board) -> Vec<Move> {
     // iterate through all cells 
     for row in 0..9 {
         for col in 0..9 {
-            let cell = &board.grid[row][col];
+            let cell = board.grid[row][col];
             if cell.value == 0 && cell.is_solvable() {
                 let val = cell.find_candidate();
                 moves.push(Move::NakedSingle { row, col, value: val as u8 });
