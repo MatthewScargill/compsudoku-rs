@@ -1,4 +1,4 @@
-use crate::solver;
+use crate::solvers;
 
 #[derive(Clone, Copy)]
 pub struct Cell {
@@ -152,7 +152,7 @@ impl Board {
             self.evaluate();
 
             // find possible moves
-            let moves = solver::find_moves(&*self);
+            let moves = solvers::find_moves(&*self);
 
             // break once the board is complete (no more moves)
             if moves.is_empty() {
@@ -160,7 +160,7 @@ impl Board {
             }
 
             // if they exist, apply moves
-            solver::apply_moves(self, &moves);
+            solvers::apply_moves(self, &moves);
 
             // print moves for debugging
             for mv in moves {
