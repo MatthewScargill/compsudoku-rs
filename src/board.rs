@@ -101,8 +101,6 @@ impl Board {
 
             // find possible moves
             let mut moves = solvers::find_moves(&*self);
-            let oldmoves = moves.clone(); // for comparison with new moves later
-
 
             // print moves for debugging
             for mv in &moves {
@@ -114,13 +112,14 @@ impl Board {
             // find possible moves
             let mut newmoves = solvers::find_moves(&*self);
             
-            newmoves.retain(|h| { !oldmoves.iter().any(|n| n.row() == h.row() && n.col() == h.col())});
+            newmoves.retain(|h| { !moves.iter().any(|n| n.row() == h.row() && n.col() == h.col())});
 
             for mv in &newmoves {
                 println!("{:?}", mv);
             }
 
-            moves.extend(&newmoves);
+
+            moves.extend(newmoves);
             // break once the board is complete (no more moves)
             //if moves.is_empty() {
                 //break;
@@ -130,14 +129,9 @@ impl Board {
 
             // update evaluators and resulting moves above here
 
-            // if they exist, apply moves
-            solvers::apply_moves(self, &newmoves);
+            solvers::apply_moves(self, &moves);
 
-            let mut allmoves: Vec<Move> = Vec::new();
-            allmoves.extend(oldmoves);
-            allmoves.extend(newmoves);
-
-            if allmoves.is_empty() {break;}
+            if moves.is_empty() {break;}
 
 
             // board with above moves applied (again for debugging)
