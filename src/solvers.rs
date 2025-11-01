@@ -35,7 +35,10 @@ pub fn find_moves(board: &Board) -> Vec<Move> {
 
     // make vectors of all the moves
     let nakedsingles = find_naked_singles(board);
-    let hiddensingles = find_hidden_singles(board);
+    let mut hiddensingles = find_hidden_singles(board);
+    
+    // removes hidden singles which are also naked singles
+    hiddensingles.retain(|h| { !nakedsingles.iter().any(|n| n.row() == h.row() && n.col() == h.col())});
 
     // add all move types to move vector
     moves.extend(nakedsingles);

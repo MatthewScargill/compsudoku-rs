@@ -1,4 +1,5 @@
 use crate::solvers;
+use crate::solvers::*;
 use crate::evaluators;
 
 #[derive(Clone, Copy)]
@@ -99,29 +100,50 @@ impl Board {
             evaluators::basic(self);
 
             // find possible moves
-            let moves = solvers::find_moves(&*self);
+            let mut moves = solvers::find_moves(&*self);
+            let oldmoves = moves.clone(); // for comparison with new moves later
 
-            // break once the board is complete (no more moves)
-            if moves.is_empty() {
-                break;
+
+            // print moves for debugging
+            for mv in &moves {
+                println!("{:?}", mv);
             }
 
+            evaluators::test(self);
 
+            // find possible moves
+            let mut newmoves = solvers::find_moves(&*self);
+            
+            newmoves.retain(|h| { !oldmoves.iter().any(|n| n.row() == h.row() && n.col() == h.col())});
+
+            for mv in &newmoves {
+                println!("{:?}", mv);
+            }
+
+            moves.extend(&newmoves);
+            // break once the board is complete (no more moves)
+            //if moves.is_empty() {
+                //break;
+            //}
+
+            //evaluators::test(self);
 
             // update evaluators and resulting moves above here
 
             // if they exist, apply moves
-            solvers::apply_moves(self, &moves);
+            solvers::apply_moves(self, &newmoves);
 
-            // print moves for debugging
-            for mv in moves {
-                println!("{:?}", mv);
-            }
-            
+            let mut allmoves: Vec<Move> = Vec::new();
+            allmoves.extend(oldmoves);
+            allmoves.extend(newmoves);
+
+            if allmoves.is_empty() {break;}
+
+
             // board with above moves applied (again for debugging)
             self.print();
-        }    
-    }
+        } 
+    }   
 
 
     // terminal output of the current board
