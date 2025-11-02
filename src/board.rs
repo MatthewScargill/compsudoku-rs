@@ -33,7 +33,7 @@ impl Cell {
         // find the candidates (reads &[bool; 9] from &self) 
         // -> iterate over each element (reads &bool from &[bool; 9])
         // -> filter the borrowed (&bool from &self) borrowed (from iter so &&bool) values
-        // -> count the number of unfiltered (True) values 
+        // -> count the number of dereferenced (True) values 
         // rust is a beautiful language
     }
 
@@ -100,7 +100,7 @@ impl Board {
             evaluators::basic(self);
 
             // find possible moves
-            let mut moves = solvers::find_moves(&*self);
+            let mut moves = solvers::find_moves(self);
 
             // print moves for debugging
             for mv in &moves {
@@ -110,7 +110,7 @@ impl Board {
             evaluators::test(self);
 
             // find possible moves
-            let mut newmoves = solvers::find_moves(&*self);
+            let mut newmoves = solvers::find_moves(self);
             
             newmoves.retain(|h| { !moves.iter().any(|n| n.row() == h.row() && n.col() == h.col())});
 
