@@ -97,61 +97,107 @@ pub fn medium(board: &mut Board) {
 }
 
 pub fn test(board: &mut Board) {
-    for row in 0..9 {
-        // For each digit 1–9, record which columns it appears in
-        let mut digit_cells: [Vec<usize>; 9] = Default::default();
+    // closure to process any unit (row, column, or box)
+    let mut process_unit = |coords: &[(usize, usize)], unit_name: &str, unit_idx: usize| {
+        // For each digit 1–9, record which cells it appears in
+        let mut digit_cells: [Vec<(usize, usize)>; 9] = Default::default();
 
-        for col in 0..9 {
-            let cell = &board.grid[row][col];
+        for &(r, c) in coords {
+            let cell = &board.grid[r][c];
             if cell.value != 0 {
                 continue; // skip solved cells
             }
-
             for digit in 1..=9 {
-                if cell.candidates[(digit - 1) as usize] {
-                    digit_cells[digit - 1].push(col);
+                if cell.candidates[digit - 1] {
+                    digit_cells[digit - 1].push((r, c));
                 }
             }
         }
 
-        // Now find two digits that share the same two cell indices
-        for d1 in 1..=8 {
-            let cells1 = &digit_cells[d1 - 1];
-            if cells1.len() != 2 {
-                continue;
-            }
-
-            for d2 in (d1 + 1)..=9 {
-                let cells2 = &digit_cells[d2 - 1];
-                if cells2.len() == 2 && cells1 == cells2 {
-                    // Hidden pair found: digits (d1, d2) share cells cells1[0] and cells1[1]
-                    let cols = [cells1[0], cells1[1]];
-                    println!(
-                        "Hidden pair in row {}: digits ({}, {}) at columns {:?}",
-                        row + 1, d1, d2, cols
-                    );
-
-                    // 1️⃣ Keep only these two digits in the shared cells
-                    for &col in &cols {
-                        let cell = &mut board.grid[row][col];
-                        for d in 1..=9 {
-                            cell.candidates[d - 1] = d == d1 || d == d2;
+        // Find all combinations of 2 or 3 digits that share exactly 2 or 3 identical cells
+        for n in [2, 3] {
+            for d1 in 1..=(9 - (n - 1)) {
+                for d2 in (d1 + 1)..=9 {
+                    if n == 2 {
+                        let cells1 = &digit_cells[d1 - 1];
+                        let cells2 = &digit_cells[d2 - 1];
+                        if cells1.len() == 2 && cells2.len() == 2 && cells1 == cells2 {
+                            apply_hidden_set(board, coords, cells1, &[d1, d2]);
+                            println!(
+                                "Hidden pair in {} {}: digits ({}, {}) at {:?}",
+                                unit_name, unit_idx + 1, d1, d2, cells1
+                            );
                         }
-                    }
+                    } else {
+                        for d3 in (d2 + 1)..=9 {
+                            let cells1 = &digit_cells[d1 - 1];
+                            let cells2 = &digit_cells[d2 - 1];
+                            let cells3 = &digit_cells[d3 - 1];
 
-                    // 2️⃣ Remove these digits from all other cells in the row
-                    for col in 0..9 {
-                        if cols.contains(&col) {
-                            continue;
+                            // all must have exactly 3 candidate cells, and all must be identical
+                            if cells1.len() == 3
+                                && cells2.len() == 3
+                                && cells3.len() == 3
+                                && cells1 == cells2
+                                && cells2 == cells3
+                            {
+                                apply_hidden_set(board, coords, cells1, &[d1, d2, d3]);
+                                println!(
+                                    "Hidden triple in {} {}: digits ({}, {}, {}) at {:?}",
+                                    unit_name, unit_idx + 1, d1, d2, d3, cells1
+                                );
+                            }
                         }
-                        let cell = &mut board.grid[row][col];
-                        if cell.value != 0 {
-                            continue;
-                        }
-                        cell.candidates[d1 - 1] = false;
-                        cell.candidates[d2 - 1] = false;
                     }
                 }
+            }
+        }
+    };
+
+    // rows
+    for row in 0..9 {
+        let coords: Vec<(usize, usize)> = (0..9).map(|col| (row, col)).collect();
+        process_unit(&coords, "row", row);
+    }
+
+    // columns
+    for col in 0..9 {
+        let coords: Vec<(usize, usize)> = (0..9).map(|row| (row, col)).collect();
+        process_unit(&coords, "column", col);
+    }
+
+    // boxes
+    for box_idx in 0..9 {
+        let br = (box_idx / 3) * 3;
+        let bc = (box_idx % 3) * 3;
+        let coords: Vec<(usize, usize)> =
+            (0..3).flat_map(|r| (0..3).map(move |c| (br + r, bc + c))).collect();
+        process_unit(&coords, "box", box_idx);
+    }
+
+    // inline helper (hidden sets elimination)
+    fn apply_hidden_set(
+        board: &mut Board,
+        coords: &[(usize, usize)],
+        target_cells: &[(usize, usize)],
+        digits: &[usize],
+    ) {
+        // only these digits in the target cells
+        for &(r, c) in target_cells {
+            let cell = &mut board.grid[r][c];
+            for d in 1..=9 {
+                cell.candidates[d - 1] = digits.contains(&d);
+            }
+        }
+
+        // remove these digits from all other cells in the same unit
+        for &(r, c) in coords {
+            if target_cells.contains(&(r, c)) || board.grid[r][c].value != 0 {
+                continue;
+            }
+            let cell = &mut board.grid[r][c];
+            for &d in digits {
+                cell.candidates[d - 1] = false;
             }
         }
     }

@@ -24,7 +24,7 @@ const TEST5: &str = "01060003430080060000407000000100002800090500073000050000008
 fn main() {
     //initialise and setup board
     let mut board = Board::new();
-    board.setup(TEST4);
+    board.setup(TEST5);
     
     // look at solution
     board.solve();
