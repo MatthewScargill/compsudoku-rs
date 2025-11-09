@@ -83,9 +83,11 @@ impl Board {
         // initial state of the board
         self.print();
 
+        let mut count = 0;
+
         loop {
 
-            // update candidates list with simple moves
+            // basic candidate evaluation
             evaluators::basic(self);
 
             // find possible moves
@@ -94,6 +96,7 @@ impl Board {
             // print moves for debugging
             for mv in &moves {
                 println!("{:?}", mv);
+                count += 1;
             }
 
             evaluators::test(self);
@@ -105,6 +108,7 @@ impl Board {
 
             for mv in &newmoves {
                 println!("{:?}", mv);
+                count +=2;
             }
 
 
@@ -126,6 +130,7 @@ impl Board {
             // board with above moves applied (again for debugging)
             self.print();
         } 
+        println!("{}", count)
     }   
 
 

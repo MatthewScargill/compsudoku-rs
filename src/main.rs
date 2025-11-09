@@ -18,12 +18,16 @@ const TEST4: &str = "00080040707000000200800003142063000080004000300005702465000
 const TEST5: &str = "010600034300800600004070000001000028000905000730000500000080900009004007270006050";
 // seems like fiendish is a good level to aim for as super fiendish sometimes requires guessing
 // which we can work on but for now let's keep it to logically solvable puzzles
-
+// score for depth 2 only for empty depth 1: 57
+// score for depth 2 search by default: 66
+// i could have not implemented the comparison very well, to reconsider
+// slightly worried the just find all the easy moves first method of solving will automatically show the optimal path
+// if it is i can't find it online anywhere, dreaming of a nice graph showing the cost evoluation of every possible path
 
 fn main() {
     //initialise and setup board
     let mut board = Board::new();
-    board.setup(TEST4);
+    board.setup(TEST5);
     
     // moveset by moveset iterative solve with comments
     board.solve();
