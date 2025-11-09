@@ -51,50 +51,6 @@ pub fn basic(board: &mut Board) {
 }
 
 // second tier candidate evaluation, considering (pointing) pairs, triples, ...
-pub fn medium(board: &mut Board) {
-    // in each box, row, and column, look for n cells with the same n candidates
-    // remove these candidates from the other cells in the box, row, or column
-    // does the row and column logic automatically take care of pointing pairs and triples?
-    // i dont think it matters if in the same box, as behaves the same whether or not they're pointing
-    // just if in the same box then can get rid of them from the the same box
-
-    // plan: row and column logic, and if they share a box, edit out of other cells in the box + means no repeats
-
-    // do we go for every combination? that's 9C2 + 9C3 = 36 + 84 = 120 combinations 
-    // also need to check the candidates are unique to those 2 
-    // candidate sort 
-
-
-    // reusable variables
-    let mut count = 0;
-    let mut cells: Vec<usize> = Vec::new();
-
-    //row per row
-    for row in 0..9 {
-        for i in 1..10 {
-            let mut count = 0;
-            let mut indices: Vec<usize> = Vec::new();
-            // checks to see if i is a candidate, if it is 
-            if board.grid[row][i].has_candidate(i as u8) { count += 1;}
-            if count > 2 {continue;}
-            if count == 2 {cells.push(i); }
-        }
-        
-        if board.grid[row][cells[0]].has_candidate(cells[0] as u8) 
-        && board.grid[row][cells[0]].has_candidate(cells[0] as u8) {
-
-        }
-
-    }
-
-    // clear between types of moves
-    count = 0;
-    cells.clear();
-
-
-
-
-}
 
 pub fn test(board: &mut Board) {
     // closure to process any unit (row, column, or box)

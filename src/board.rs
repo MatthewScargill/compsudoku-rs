@@ -16,16 +16,6 @@ impl Cell {
         }
     }
 
-    // check if there's a candidate
-    pub fn has_candidate(&self, n: u8) -> bool {
-        self.candidates[(n - 1) as usize]
-    }
-
-    // edit nth .candidates entries
-    pub fn set_candidate(&mut self, n: u8, present: bool) {
-        self.candidates[(n - 1) as usize] = present
-    }
-    
     // count number of True .candidates 
     pub fn count_candidates(&self) -> usize {
         self.candidates.iter().filter(|&&b| b).count()
